@@ -161,4 +161,7 @@
 @media print {
   .no-print { display: none !important; }
   body { background: white; }
+  body:has(.print-area) * { visibility: hidden; }
+  body:has(.print-area) .print-area, body:has(.print-area) .print-area * { visibility: visible; }
+  .print-area { position: absolute; left: 0; top: 0; width: 100%; border: none !important; }
 }
