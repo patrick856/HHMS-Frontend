@@ -1,24 +1,31 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { LANDING, useAuth } from "@/lib/auth";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "HHMS — Hurghada Hospital Management System" },
+      { name: "description", content: "Book appointments, view records and manage hospital work at Hurghada Hospital." },
+      { property: "og:title", content: "HHMS — Hurghada Hospital Management System" },
+      { property: "og:description", content: "Book appointments, view records and manage hospital work at Hurghada Hospital." },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  const { user, ready } = useAuth();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!ready) return;
+    if (!user) navigate({ to: "/login", replace: true });
+    else navigate({ to: user.mustChangePassword ? "/change-password" : LANDING[user.role], replace: true });
+  }, [ready, user, navigate]);
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="p-6">
+      <Skeleton className="h-10 w-48" />
     </div>
   );
 }
